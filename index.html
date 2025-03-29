@@ -1271,6 +1271,47 @@
 .floating-heart {
     opacity: 1 !important; /* Force visible for debugging */
 }
+        /* Mobile Menu Button (hidden by default) */
+.mobile-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    color: #444;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+/* Responsive Navbar */
+@media (max-width: 768px) {
+    .mobile-menu-button {
+        display: block;
+    }
+    
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        height: 100vh;
+        background: white;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        transition: right 0.3s ease;
+        z-index: 1000;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    }
+    
+    .nav-links.active {
+        right: 0;
+    }
+    
+    nav {
+        padding: 1rem 5%;
+    }
+}
     </style>
    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -1314,7 +1355,9 @@
             <div class="logo-main">EKSUBRO</div>
             <div class="logo-sub">MATCHMAKING</div>
         </div>
-        
+        <button class="mobile-menu-button" aria-label="Toggle menu">
+    <i class="fas fa-bars"></i>
+</button>
         <ul class="nav-links">
             <li><a href="#">HOOKUP</a></li>
             <li><a href="#">FWB</a></li>
@@ -1866,6 +1909,24 @@ document.querySelectorAll('.social-link').forEach(link => {
                 heroImage.style.transform = 'scale(1.05)';
             });
         }
+    // Mobile Menu Toggle
+const mobileMenuButton = document.querySelector('.mobile-menu-button');
+const navLinks = document.querySelector('.nav-links');
+
+mobileMenuButton.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    mobileMenuButton.innerHTML = navLinks.classList.contains('active') 
+        ? '<i class="fas fa-times"></i>' 
+        : '<i class="fas fa-bars"></i>';
+});
+
+// Close menu when clicking on a link
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        mobileMenuButton.innerHTML = '<i class="fas fa-bars"></i>';
+    });
+});
 </script>
 </body>
 </html>

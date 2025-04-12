@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Status</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        .status { font-size: 24px; margin: 20px 0; }
+        .success { color: green; }
+        .pending { color: orange; }
+        .failed { color: red; }
+        .btn { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #4CAF50; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Payment Status</h1>
+    <div id="status" class="status"></div>
+    <div id="details"></div>
+    <a href="/dashboard.html" class="btn" id="dashboardBtn" style="display: none;">Go to Dashboard</a>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const reference = urlParams.get('reference');
+        
+        async function checkPayment() {
+            const response = await fetch(`/api/payments/verify-payment?reference=${reference}`);
+            const data = await response.json();
+            
+            const statusEl = document.getElementById('status');
+            const detailsEl = document.getElementById('details');
+            const btnEl = document.getElementById('dashboardBtn');
+            
+            if (data.success) {
+                if (data.status === 'successful') {
+                    statusEl.textContent = 'Payment Successful!';
+                    statusEl.className = 'status success';
+                    detailsEl.innerHTML = `
+                        <p>Amount: ₦${data.amount}</p>
+                        <p>Paid on: ${new Date(data.paidAt).toLocaleString()}</p>
+                    `;
+                    btnEl.style.display = 'inline-block';
+                } else if (data.status === 'pending') {
+                    statusEl.textContent = 'Payment Pending...';
+                    statusEl.className = 'status pending';
+                    setTimeout(checkPayment, 3000); // Check again after 3 seconds
+                } else {
+                    statusEl.textContent = 'Payment Failed';
+                    statusEl.className = 'status failed';
+                }
+            } else {
+                statusEl.textContent = 'Payment Verification Failed';
+                statusEl.className = 'status failed';
+            }
+        }
+        
+        checkPayment();
+    </script>
+</body>
+</html>

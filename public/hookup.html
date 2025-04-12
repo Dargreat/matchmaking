@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EKSUBRO Matchmaking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 6%;
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-main {
+            color: #ff69b4;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .logo-sub {
+            color: #333;
+            font-size: 0.8rem;
+            margin-top: -5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-item {
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            color: #ff69b4;
+            transform: translateY(-2px);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #ff69b4;
+            transition: width 0.3s ease;
+        }
+
+        .nav-item:hover::after {
+            width: 100%;
+        }
+
+        /* Notice Banner Styles */
+        .notice-banner {
+            background: #fff0f5;
+            padding: 1.5rem;
+            margin: 1rem auto;
+            border-radius: 15px;
+            max-width: 1200px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.1);
+            border: 2px solid #ff69b4;
+        }
+
+        .notice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .notice-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .notice-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .notice-icon {
+            font-size: 1.8rem;
+            color: #ff69b4;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .notice-text h4 {
+            color: #ff1493;
+            margin-bottom: 0.3rem;
+            font-size: 1.1rem;
+        }
+
+        .notice-text p {
+            color: #333;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .warning-emoji {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .profile-details {
+            text-align: center;
+        }
+
+        .profile-name {
+            color: #ff69b4;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .connect-button {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .connect-button:hover {
+            background: #ff1493;
+            transform: scale(1.05);
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: #fff0f5;
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-link {
+            color: #ff69b4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="logo-main">EKSUBRO</span>
+            <span class="logo-sub">matchmaking</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-item">Home</a>
+            <a href="#" class="nav-item" style="color: #ff69b4">FWB</a>
+            <a href="#" class="nav-item">Relationship</a>
+        </div>
+    </nav>
+
+    <!-- Notice Banner -->
+    <div class="notice-banner">
+        <div class="warning-emoji">🚨💖⚠️</div>
+        <div class="notice-grid">
+            <div class="notice-item">
+                <i class="fas fa-shield-alt notice-icon"></i>
+                <div class="notice-text">
+                    <h4>🔒 Privacy First!</h4>
+                    <p>Respect our queens' identities - no personal info sharing!</p>
+                </div>
+            </div>
+            <div class="notice-item">
+                <i class="fas fa-money-bill-wave notice-icon"></i>
+                <div class="notice-text">
+                    <h4>💰 No Advance Payments!</h4>
+                    <p>Never send money upfront - only cover transportation if needed</p>
+                </div>
+            </div>
+            <div class="notice-item">
+                <i class="fas fa-comment-slash notice-icon"></i>
+                <div class="notice-text">
+                    <h4>🚫 Keep It On Platform</h4>
+                    <p>No outside messaging - protect yourself & our community</p>
+                </div>
+            </div>
+            <div class="notice-item">
+                <i class="fas fa-bus notice-icon"></i>
+                <div class="notice-text">
+                    <h4>🚌 Travel Smart</h4>
+                    <p>Only pay transport when absolutely necessary</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="profile-grid">
+            <!-- Profile Card 1 -->
+            <div class="profile-card">
+                <img src="https://source.unsplash.com/random/400x400?woman" alt="Profile" class="profile-image">
+                <div class="profile-details">
+                    <h3 class="profile-name">Sophia, 24</h3>
+                    <p class="profile-info">📍 City Center · 🎨 Creative Soul</p>
+                    <button class="connect-button">Connect Now</button>
+                </div>
+            </div>
+
+            <!-- Profile Card 2 -->
+            <div class="profile-card">
+                <img src="https://source.unsplash.com/random/400x400?lady" alt="Profile" class="profile-image">
+                <div class="profile-details">
+                    <h3 class="profile-name">Emma, 27</h3>
+                    <p class="profile-info">📍 Downtown · 💼 Professional</p>
+                    <button class="connect-button">Connect Now</button>
+                </div>
+            </div>
+
+            <!-- Add more profile cards as needed -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#" class="footer-link">About Us</a>
+            <a href="#" class="footer-link">Safety Tips</a>
+            <a href="#" class="footer-link">Contact</a>
+            <a href="#" class="footer-link">Privacy Policy</a>
+        </div>
+        <p class="footer-text">© 2023 EKSUBRO Matchmaking. All rights reserved.<br>
+            Connecting hearts responsibly 💖</p>
+    </footer>
+
+    <script src="./js/hookup.js"></script>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Unlock Contact Information</h3>
+            <p>Pay ₦5,000 to view this contact's phone number</p>
+            <div class="payment-options">
+                <button id="payWithCard">Pay with Card</button>
+                <button id="payWithBank">Pay with Bank Transfer</button>
+            </div>
+            <div id="paymentStatus"></div>
+        </div>
+    </div>
+
+    <style>
+        /* Add these styles to your existing CSS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .payment-options button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #payWithCard {
+            background-color: #ff69b4;
+            color: white;
+        }
+
+        #payWithBank {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .phone-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ff69b4;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #fff0f5;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .unlock-button {
+            background: linear-gradient(to right, #ff69b4, #ff1493);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .unlock-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .paid-badge {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+    </style>
+</body>
+
+</html>

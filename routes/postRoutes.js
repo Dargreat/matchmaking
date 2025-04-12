@@ -13,29 +13,25 @@ const Payment = require('../models/Payment');
 
 router.get('/dashboard', protect, async (req, res) => {
     try {
-        // Get all posts
-        const posts = await Post.find().sort({ createdAt: -1 });
-        
-        // Get user's payments
+        // Get user's successful payments
         const payments = await Payment.find({ 
             user: req.user.id,
             status: 'successful'
-        });
+        }).populate('post');  // Populate the post details
         
-        const paidPostIds = payments.map(payment => payment.post.toString());
-        
-        // Add payment status to each post
-        const postsWithPaymentStatus = posts.map(post => ({
-            ...post.toObject(),
-            paymentStatus: paidPostIds.includes(post._id.toString()) ? 'paid' : 'unpaid'
+        // Extract and format the paid posts
+        const paidPosts = payments.map(payment => ({
+            ...payment.post.toObject(),
+            paymentDate: payment.paidAt,
+            paymentMethod: payment.paymentMethod
         }));
         
         res.json({
             success: true,
-            posts: postsWithPaymentStatus
+            posts: paidPosts
         });
     } catch (error) {
-        console.error('Dashboard error:', error);
+        console.error('Paid posts error:', error);
         res.status(500).json({
             success: false,
             message: 'Server Error'

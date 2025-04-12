@@ -49,7 +49,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         redirectToLogin();
     });
     
-    function renderPosts(posts) {        
+    function renderPosts(posts) { 
+        console.log(posts);
+               
         postsContainer.innerHTML = `
             <div class="posts-grid">
                 ${posts.map(post => `
@@ -58,12 +60,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <div class="post-content">
                             <h3 class="post-title">${post.name}</h3>
                             <div class="post-price">Price: ₦${post.price}</div>
-                            <p>${post.paymentStatus === 'paid' ? post.phoneNumber : 'Not Paid'}</p>
+                            <p>${post.phoneNumber}</p>
                             <div class="post-meta">
                                 <span>${new Date(post.createdAt).toLocaleDateString()}</span>
-                                <span class="payment-status ${post.paymentStatus === 'paid' ? 'paid' : 'unpaid'}">
-                                    ${post.paymentStatus === 'paid' ? 'Paid' : 'Not Paid'}
-                                </span>
                             </div>
                         </div>
                     </div>

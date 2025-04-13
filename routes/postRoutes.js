@@ -42,9 +42,11 @@ router.get('/dashboard', protect, async (req, res) => {
 // @route   POST /api/posts
 // @desc    Create a new post
 // @access  Private (Admin only)
+// In your routes file
 router.post('/', adminProtect, upload.single('image'), async (req, res) => {
     try {
-        const { name, phoneNumber, category, isFeatured, price } = req.body;
+        // Fields are now in req.body (make sure to use express.json() before multer)
+        const { name, phoneNumber, category, price, isFeatured } = req.body;
 
         // Validate category
         const validCategories = ['FWB', 'HOOKUP', 'RELATIONSHIP', 'GENERAL'];
@@ -52,28 +54,12 @@ router.post('/', adminProtect, upload.single('image'), async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid category' });
         }
 
-        // Upload image to Cloudinary if provided
-        let imageUrl = '';
-        if (req.file) {
-            const result = await new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'eksubro/posts' },
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                );
-                stream.end(req.file.buffer);
-            });
-            imageUrl = result.secure_url;
-        }
-
-        // Create new post
+        // Create new post - image URL is already in req.file.path
         const newPost = new Post({
             name,
             phoneNumber,
             category,
-            imageUrl,
+            imageUrl: req.file ? req.file.path : '', // Cloudinary URL from multer-storage-cloudinary
             price: price || 5000,
             isFeatured: isFeatured === 'true'
         });
@@ -90,25 +76,23 @@ router.post('/', adminProtect, upload.single('image'), async (req, res) => {
 // @route   GET /api/posts
 // @desc    Get all posts (filtered by category if provided)
 // @access  Public
-router.get('/', protect, async (req, res) => {
+router.get('/', adminProtect, async (req, res) => {
     try {
         const { category } = req.query;
         const query = {};
         
-        if (category) {
-            query.category = category;
-        }
+        // if (category) {
+        //     query.category = category;
+        // }
 
-        const posts = await Post.find(query).select('-phoneNumber -purchasedBy');
+        console.log(query);
+        const posts = await Post.find(query);
+        console.log(posts);
+        
         
         // For each post, check if user has purchased it
         const postsWithAccess = await Promise.all(posts.map(async post => {
             const postObj = post.toObject();
-            console.log("post", post);
-            console.log("postObj", postObj);
-            if (!post?.purchasedBy) {
-                post.purchasedBy = [];
-            }
             const hasAccess = post.purchasedBy.includes(req.user.id);
             return {
                 ...postObj,
@@ -230,38 +214,6 @@ router.delete('/:id', adminProtect, async (req, res) => {
     }
 });
 
-// @route   POST /api/posts/:id/like
-// @desc    Like/unlike a post
-// @access  Private
-router.post('/:id/like', protect, async (req, res) => {
-    try {
-        const post = await Post.findById(req.params.id);
-
-        if (!post) {
-            return res.status(404).json({ success: false, message: 'Post not found' });
-        }
-
-        // Check if user already liked the post
-        const alreadyLiked = post.likes.includes(req.user.id);
-
-        if (alreadyLiked) {
-            // Unlike the post
-            post.likes = post.likes.filter(
-                userId => userId.toString() !== req.user.id.toString()
-            );
-        } else {
-            // Like the post
-            post.likes.push(req.user.id);
-        }
-
-        await post.save();
-
-        res.json({ success: true, likes: post.likes.length, isLiked: !alreadyLiked });
-    } catch (error) {
-        console.error('Error liking post:', error);
-        res.status(500).json({ success: false, message: 'Server Error' });
-    }
-});
 
 
 module.exports = router;

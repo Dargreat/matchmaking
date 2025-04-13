@@ -43,14 +43,18 @@ function checkAdminAuth() {
 }
 
 function fetchUploads() {
-    fetch('/api/posts')
+    fetch('/api/posts', {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+    })
         .then(response => response.json())
         .then(data => {
             console.log(data);
 
             if (data.success && data.posts) {
                 data.posts.forEach(post => {
-                    createImageCard(post.imageUrl, post.category, post._id);
+                    createImageCard(post.imageUrl, post.category, post._id, post.phoneNumber);
                 });
             }
         })
@@ -64,6 +68,7 @@ function handleUpload(e) {
     const fileInput = document.getElementById('imageInput');
     const name = document.getElementById('nameInput').value;
     const phoneNumber = document.getElementById('phoneInput').value;
+    const price = document.getElementById('price').value;
     const category = document.querySelector('input[name="category"]:checked').value;
 
     // Create FormData object
@@ -72,6 +77,7 @@ function handleUpload(e) {
     formData.append('name', name);
     formData.append('phoneNumber', phoneNumber);
     formData.append('category', category);
+    formData.append('price', price);
 
     console.log("Making request");
 
@@ -85,7 +91,7 @@ function handleUpload(e) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                createImageCard(data.imageUrl, category, data.id);
+                createImageCard(data.imageUrl, category, data.id, data.phoneNumber);
                 uploadForm.reset();
             } else {
                 alert(data.message || 'Upload failed');
@@ -97,7 +103,7 @@ function handleUpload(e) {
         });
 }
 
-function createImageCard(imageUrl, category, id) {
+function createImageCard(imageUrl, category, id, phoneNumber) {
     const card = document.createElement('div');
     card.className = 'image-card';
     card.dataset.id = id;
@@ -111,6 +117,9 @@ function createImageCard(imageUrl, category, id) {
     const categoryLabel = document.createElement('div');
     categoryLabel.className = 'image-category';
     categoryLabel.textContent = `Category: ${category}`;
+    const phoneNumberLabel = document.createElement('div');
+    phoneNumberLabel.className = 'image-phoneNumber';
+    phoneNumberLabel.textContent = `Phone number: ${phoneNumber}`;
 
     const actions = document.createElement('div');
     actions.className = 'image-actions';
@@ -128,6 +137,7 @@ function createImageCard(imageUrl, category, id) {
     actions.appendChild(editButton);
     actions.appendChild(deleteButton);
 
+    details.appendChild(phoneNumberLabel);
     details.appendChild(categoryLabel);
     details.appendChild(actions);
 

@@ -6,7 +6,6 @@ const postRoutes = require('./routes/postRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const authRoutes = require('./routes/auth');
 const morgan = require('morgan');
-const User = require('./models/User');
 
 
 const app = express();

@@ -81,9 +81,9 @@ router.get('/', adminProtect, async (req, res) => {
         const { category } = req.query;
         const query = {};
         
-        // if (category) {
-        //     query.category = category;
-        // }
+        if (category) {
+            query.category = category;
+        }
 
         console.log(query);
         const posts = await Post.find(query);

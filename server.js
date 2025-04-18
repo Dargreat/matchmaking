@@ -16,4 +16,5 @@ const startServer = async () => {
     }
 };
 
-startServer();
+// Export the server for testing or serverless environments
+module.exports = startServer();

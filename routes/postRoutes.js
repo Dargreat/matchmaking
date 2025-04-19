@@ -76,7 +76,7 @@ router.post('/', adminProtect, upload.single('image'), async (req, res) => {
 // @route   GET /api/posts
 // @desc    Get all posts (filtered by category if provided)
 // @access  Public
-router.get('/', adminProtect, async (req, res) => {
+router.get('/', protect, async (req, res) => {
     try {
         const { category } = req.query;
         const query = {};

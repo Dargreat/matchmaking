@@ -110,7 +110,7 @@ function createProfileCard(match, container) {
     } else {
         const unlockButton = document.createElement('button');
         unlockButton.className = 'unlock-button';
-        unlockButton.textContent = 'Unlock Contact (₦5,000)';
+        unlockButton.textContent = `Unlock Contact (₦${match.price})`;
         details.appendChild(unlockButton);
     }
 
